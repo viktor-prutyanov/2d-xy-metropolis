@@ -9,7 +9,7 @@
 #include <climits>
 #include <vector>
 
-//#define MKL
+#define MKL
 #define NR_RND 1024
 
 #ifdef MKL
@@ -237,8 +237,11 @@ int main(int argc, char *argv[])
     s = (double *)malloc(L * L * sizeof(*s));
 
 #ifdef MKL
+#if 1
     vslNewStream(&stream, VSL_BRNG_RDRAND, 1);
-    //vslNewStream(&stream, VSL_BRNG_MT19937, 1);
+#else
+    vslNewStream(&stream, VSL_BRNG_MT19937, 1);
+#endif
     double *d_rnd_buf1 = (double *)malloc(NR_RND * sizeof(*d_rnd_buf1));
     double *d_rnd_buf2 = (double *)malloc(NR_RND * sizeof(*d_rnd_buf2));
     int *i_rnd_buf = (int *)malloc(NR_RND * sizeof(*i_rnd_buf));
@@ -295,12 +298,38 @@ int main(int argc, char *argv[])
 #else
         if ((dE <= 0) || (rand() * 1.0 / RAND_MAX < exp(-dE / T))) {
 #endif
-            S(i, j) = s1;
+#if 0
             E += dE;
+            S(i, j) = s1;
             if (iter > (nr_iters - a)) {
                 mx += cos(s1) - cos(s0);
                 my += sin(s1) - sin(s0);
             }
+
+            dE = 0;
+            for (int k = 0; k < 2; k++) {
+                for (int l = 0; l < 2; l++) {
+                    if (!i && !j && (E_pair(s0, S_p(i + k, j + l)) > 0.95)) {
+                        int I = ((i + k) < L) ? ((i + k >= 0) ? (i + k) : (L + ((i + k) % L))) : ((i + k) % L);
+                        int J = ((j + l) < L) ? ((j + l >= 0) ? (j + l) : (L + ((j + l) % L))) : ((j + l) % L);
+                        dE += get_dE(s, s1, i + k, j + l);
+                        if (iter > (nr_iters - a)) {
+                            mx += cos(s1) - cos(S(I, J));
+                            my += sin(s1) - sin(S(I, J));
+                        }
+                        S(I, J) = s1;
+                    }
+                }
+            }
+            E += dE;
+#else
+            E += dE;
+            S(i, j) = s1;
+            if (iter > (nr_iters - a)) {
+                mx += cos(s1) - cos(s0);
+                my += sin(s1) - sin(s0);
+            }
+#endif
         }
 
         if (iter == (nr_iters - a)) {

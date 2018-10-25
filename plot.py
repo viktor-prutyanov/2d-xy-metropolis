@@ -19,7 +19,9 @@ for i in range(1, len(sys.argv)):
         for i in range(1, N):
             plt.subplot(N, 1, i)
             ys = a[:,i]
-            plt.plot(xs, ys, '.-')
+            plt.xlabel(r"$N$ steps")
+            plt.ylabel(r"Energy")
+            plt.loglog(xs, -ys, '.-')
             plt.grid()
 
 plt.show()

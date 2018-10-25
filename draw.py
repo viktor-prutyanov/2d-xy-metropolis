@@ -33,7 +33,7 @@ for i in range(a.shape[0]):
             for l in range(2):
                 w[k, l] = a[(i + k) % a.shape[0], (j + l) % a.shape[1]] * 255
         s = d(w[1, 0], w[0,0]) + d(w[1, 1], w[1, 0]) + d(w[0, 1], w[1, 1]) + d(w[0, 1], w[0, 0])
-        if abs(s - 256) < 4:
+        if abs(s - 256) == 0:
             #print("w =\n", w)
             v[i, j] = 1
 
@@ -48,4 +48,4 @@ im = Image.fromarray(pic)
 im.save(sys.argv[1] + '.bmp')
 
 nr_vortices = len(v[v == 1])
-print(nr_vortices / (a.shape[0] * a.shape[1]))
+print(nr_vortices, nr_vortices / (a.shape[0] * a.shape[1]))
