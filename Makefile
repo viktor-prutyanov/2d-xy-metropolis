@@ -1,7 +1,9 @@
-CXXFLAGS:=-Wall -O3 -std=c++14
+CXXFLAGS:=-Wall -O3 -std=c++14 -mkl -xHost
 LDFLAGS:=-lm
 
 src:=main.cpp
+
+CXX:=icpc
 
 all: xy
 
@@ -18,7 +20,7 @@ xy: $(src:.cpp=.o)
 
 tags:
 	rm -f tags
-	find . -name '*.[hc]' -exec ctags --append {} +
+	find . -name '*.cpp' -exec ctags --append {} +
 
 clean:
 	rm -f *.o *.d xy
